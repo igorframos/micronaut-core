@@ -15,12 +15,10 @@
  */
 package io.micronaut.http.server.netty.body;
 
-import io.micronaut.buffer.netty.NettyByteBufferFactory;
 import io.micronaut.core.annotation.Experimental;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.io.buffer.ByteBufferFactory;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.type.MutableHeaders;
 import io.micronaut.http.ByteBodyHttpResponse;
@@ -28,9 +26,12 @@ import io.micronaut.http.ByteBodyHttpResponseWrapper;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.body.ByteBodyFactory;
+import io.micronaut.http.body.CloseableByteBody;
 import io.micronaut.http.body.ResponseBodyWriter;
 import io.micronaut.http.body.stream.InputStreamByteBody;
 import io.micronaut.http.codec.CodecException;
@@ -80,11 +81,11 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(ByteBufferFactory<?, ?> bufferFactory, HttpRequest<?> request, @NonNull MutableHttpResponse<SystemFile> httpResponse, @NonNull Argument<SystemFile> type, @NonNull MediaType mediaType, SystemFile object) throws CodecException {
-        return write(request, httpResponse, object);
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, @NonNull MutableHttpResponse<SystemFile> httpResponse, @NonNull Argument<SystemFile> type, @NonNull MediaType mediaType, SystemFile object) throws CodecException {
+        return write(bodyFactory, request, httpResponse, object);
     }
 
-    public ByteBodyHttpResponse<?> write(HttpRequest<?> request, MutableHttpResponse<SystemFile> response, SystemFile systemFile) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<SystemFile> response, SystemFile systemFile) throws CodecException {
         if (!systemFile.getFile().canRead()) {
             throw new MessageBodyException("Could not find file");
         }
@@ -132,8 +133,24 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
             }
 
             @NonNull InputStream stream = new RangeInputStream(is, position, contentLength);
-            return ByteBodyHttpResponseWrapper.wrap(response, InputStreamByteBody.create(stream, OptionalLong.of(contentLength), ioExecutor, NettyByteBufferFactory.DEFAULT));
+            return ByteBodyHttpResponseWrapper.wrap(response, InputStreamByteBody.create(stream, OptionalLong.of(contentLength), ioExecutor, bodyFactory));
         }
+    }
+
+    @Override
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<SystemFile> type, @NonNull MediaType mediaType, SystemFile object) {
+        return writePiece(bodyFactory, object);
+    }
+
+    public @NonNull CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, SystemFile object) {
+        long fileLength = object.getLength();
+        InputStream is;
+        try {
+            is = new FileInputStream(object.getFile());
+        } catch (FileNotFoundException e) {
+            throw new MessageBodyException("Could not find file", e);
+        }
+        return InputStreamByteBody.create(is, OptionalLong.of(fileLength), ioExecutor, bodyFactory);
     }
 
     @Nullable

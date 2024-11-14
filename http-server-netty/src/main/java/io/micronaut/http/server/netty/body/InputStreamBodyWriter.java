@@ -15,17 +15,19 @@
  */
 package io.micronaut.http.server.netty.body;
 
-import io.micronaut.buffer.netty.NettyByteBufferFactory;
 import io.micronaut.core.annotation.Experimental;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.io.buffer.ByteBufferFactory;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.type.MutableHeaders;
 import io.micronaut.http.ByteBodyHttpResponse;
 import io.micronaut.http.ByteBodyHttpResponseWrapper;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.body.ByteBodyFactory;
+import io.micronaut.http.body.CloseableByteBody;
 import io.micronaut.http.body.ResponseBodyWriter;
 import io.micronaut.http.body.stream.InputStreamByteBody;
 import io.micronaut.http.codec.CodecException;
@@ -58,9 +60,14 @@ public final class InputStreamBodyWriter extends AbstractFileBodyWriter implemen
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(ByteBufferFactory<?, ?> bufferFactory, HttpRequest<?> request, MutableHttpResponse<InputStream> outgoingResponse, Argument<InputStream> type, MediaType mediaType, InputStream object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<InputStream> outgoingResponse, Argument<InputStream> type, MediaType mediaType, InputStream object) throws CodecException {
         outgoingResponse.getHeaders().setIfMissing(HttpHeaderNames.CONTENT_TYPE, mediaType);
-        return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, InputStreamByteBody.create(object, OptionalLong.empty(), executorService, NettyByteBufferFactory.DEFAULT));
+        return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, InputStreamByteBody.create(object, OptionalLong.empty(), executorService, bodyFactory));
+    }
+
+    @Override
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<InputStream> type, @NonNull MediaType mediaType, InputStream object) {
+        return InputStreamByteBody.create(object, OptionalLong.empty(), executorService, bodyFactory);
     }
 
     @Override

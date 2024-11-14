@@ -29,9 +29,12 @@ import io.micronaut.core.type.MutableHeaders;
 import io.micronaut.http.ByteBodyHttpResponse;
 import io.micronaut.http.ByteBodyHttpResponseWrapper;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.body.ByteBodyFactory;
 import io.micronaut.http.body.ChunkedMessageBodyReader;
+import io.micronaut.http.body.CloseableByteBody;
 import io.micronaut.http.body.MessageBodyHandler;
 import io.micronaut.http.body.MessageBodyWriter;
 import io.micronaut.http.body.ResponseBodyWriter;
@@ -66,7 +69,6 @@ import java.io.OutputStream;
 @JsonMessageHandler.ConsumesJson
 @BootstrapContextCompatible
 @Requires(beans = JsonMapper.class)
-
 public final class NettyJsonHandler<T> implements MessageBodyHandler<T>, ChunkedMessageBodyReader<T>, CustomizableJsonHandler, ResponseBodyWriter<T> {
     private final JsonMessageHandler<T> jsonMessageHandler;
 
@@ -132,9 +134,14 @@ public final class NettyJsonHandler<T> implements MessageBodyHandler<T>, Chunked
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(ByteBufferFactory<?, ?> bufferFactory, @NonNull HttpRequest<?> request, @NonNull MutableHttpResponse<T> outgoingResponse, @NonNull Argument<T> type, @NonNull MediaType mediaType, @NonNull T object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull MutableHttpResponse<T> outgoingResponse, @NonNull Argument<T> type, @NonNull MediaType mediaType, @NonNull T object) throws CodecException {
         NettyHttpHeaders nettyHttpHeaders = (NettyHttpHeaders) outgoingResponse.getHeaders();
         nettyHttpHeaders.setIfMissing(HttpHeaderNames.CONTENT_TYPE, mediaType);
+        return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, writePiece(bodyFactory, request, outgoingResponse, type, mediaType, object));
+    }
+
+    @Override
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<T> type, @NonNull MediaType mediaType, T object) {
         ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
         JsonMapper jsonMapper = jsonMessageHandler.getJsonMapper();
         try {
@@ -143,7 +150,7 @@ public final class NettyJsonHandler<T> implements MessageBodyHandler<T>, Chunked
             buffer.release();
             throw new CodecException("Error encoding object [" + object + "] to JSON: " + e.getMessage(), e);
         }
-        return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, new AvailableNettyByteBody(buffer));
+        return new AvailableNettyByteBody(buffer);
     }
 
     @Override
