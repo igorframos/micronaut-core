@@ -15,7 +15,7 @@
  */
 package io.micronaut.http.body;
 
-import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.annotation.Experimental;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpHeaders;
@@ -23,6 +23,7 @@ import io.micronaut.http.body.stream.BodySizeLimits;
 import org.reactivestreams.Publisher;
 
 import java.nio.ByteBuffer;
+import java.util.OptionalLong;
 
 /**
  * Adapter from {@link Publisher} of NIO {@link ByteBuffer} to a {@link ReactiveByteBufferByteBody}.
@@ -30,24 +31,38 @@ import java.nio.ByteBuffer;
  * @since 4.8.0
  * @author Jonas Konrad
  */
-@Internal
-final class ByteBufferBodyAdapter extends AbstractBodyAdapter<ByteBuffer, ReactiveByteBufferByteBody.SharedBuffer> {
+@Experimental
+public final class ByteBufferBodyAdapter extends AbstractBodyAdapter<ByteBuffer, ReactiveByteBufferByteBody.SharedBuffer> {
     private ByteBufferBodyAdapter(Publisher<ByteBuffer> source, @Nullable Runnable onDiscard) {
         super(source, onDiscard);
     }
 
     @NonNull
-    public static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> source) {
+    static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> source) {
         return adapt(source, null, null);
     }
 
     @NonNull
-    public static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> publisher, @Nullable HttpHeaders headersForLength, @Nullable Runnable onDiscard) {
+    static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> publisher, @Nullable HttpHeaders headersForLength, @Nullable Runnable onDiscard) {
         ByteBufferBodyAdapter adapter = new ByteBufferBodyAdapter(publisher, onDiscard);
         adapter.sharedBuffer = new ReactiveByteBufferByteBody.SharedBuffer(BodySizeLimits.UNLIMITED, adapter);
         if (headersForLength != null) {
             adapter.sharedBuffer.setExpectedLengthFrom(headersForLength.get(HttpHeaders.CONTENT_LENGTH));
         }
+        return new ReactiveByteBufferByteBody(adapter.sharedBuffer);
+    }
+
+    /**
+     * Create a new body from the given publisher.
+     *
+     * @param publisher     The input publisher
+     * @param contentLength Optional length of the body, must match the publisher exactly
+     * @return The ByteBody fed by the publisher
+     */
+    public static CloseableByteBody adapt(@NonNull Publisher<ByteBuffer> publisher, @NonNull OptionalLong contentLength) {
+        ByteBufferBodyAdapter adapter = new ByteBufferBodyAdapter(publisher, null);
+        adapter.sharedBuffer = new ReactiveByteBufferByteBody.SharedBuffer(BodySizeLimits.UNLIMITED, adapter);
+        contentLength.ifPresent(adapter.sharedBuffer::setExpectedLength);
         return new ReactiveByteBufferByteBody(adapter.sharedBuffer);
     }
 

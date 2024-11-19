@@ -19,10 +19,12 @@ import io.micronaut.buffer.netty.NettyByteBufferFactory;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.io.buffer.ByteBuffer;
+import io.micronaut.core.util.functional.ThrowingConsumer;
 import io.micronaut.http.body.ByteBodyFactory;
 import io.micronaut.http.body.CloseableAvailableByteBody;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -30,6 +32,7 @@ import io.netty.channel.EventLoop;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +61,27 @@ public final class NettyByteBodyFactory extends ByteBodyFactory {
     @Override
     public @NonNull CloseableAvailableByteBody adapt(byte @NonNull [] array) {
         return new AvailableNettyByteBody(Unpooled.wrappedBuffer(array));
+    }
+
+    @Override
+    public @NonNull <T extends Throwable> CloseableAvailableByteBody buffer(@NonNull ThrowingConsumer<? super OutputStream, T> writer) throws T {
+        ByteBuf buf = alloc().buffer();
+        boolean release = true;
+        try {
+            ByteBufOutputStream s = new ByteBufOutputStream(buf);
+            writer.accept(s);
+            try {
+                s.close();
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to close buffer stream", e);
+            }
+            release = false;
+            return new AvailableNettyByteBody(buf);
+        } finally {
+            if (release) {
+                buf.release();
+            }
+        }
     }
 
     @Override

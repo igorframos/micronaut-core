@@ -23,10 +23,13 @@ import io.micronaut.core.io.buffer.ByteBuffer;
 import io.micronaut.core.io.buffer.ByteBufferFactory;
 import io.micronaut.core.io.buffer.ReferenceCounted;
 import io.micronaut.core.util.ArrayUtils;
+import io.micronaut.core.util.functional.ThrowingConsumer;
 import io.micronaut.http.body.stream.AvailableByteArrayBody;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -103,6 +106,21 @@ public class ByteBodyFactory {
     @NonNull
     public CloseableAvailableByteBody adapt(byte @NonNull [] array) {
         return AvailableByteArrayBody.create(byteBufferFactory(), array);
+    }
+
+    /**
+     * Buffer any data written to an {@link OutputStream} and return it as a {@link ByteBody}.
+     *
+     * @param writer The function that will write to the {@link OutputStream}
+     * @return The data written to the stream
+     * @param <T> Exception type thrown by the consumer
+     * @throws T Exception thrown by the consumer
+     */
+    @NonNull
+    public <T extends Throwable> CloseableAvailableByteBody buffer(@NonNull ThrowingConsumer<? super OutputStream, T> writer) throws T {
+        ByteArrayOutputStream s = new ByteArrayOutputStream();
+        writer.accept(s);
+        return AvailableByteArrayBody.create(byteBufferFactory(), s.toByteArray());
     }
 
     /**

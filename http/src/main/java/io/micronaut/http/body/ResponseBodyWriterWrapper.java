@@ -84,6 +84,6 @@ final class ResponseBodyWriterWrapper<T> implements ResponseBodyWriter<T> {
     }
 
     private @NonNull CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, MutableHttpHeaders headers, @NonNull Argument<T> type, @NonNull MediaType mediaType, T object) {
-        return bodyFactory.adapt(writeTo(type, mediaType, object, headers, bodyFactory.byteBufferFactory()));
+        return bodyFactory.buffer(s -> writeTo(type, mediaType, object, headers, s));
     }
 }

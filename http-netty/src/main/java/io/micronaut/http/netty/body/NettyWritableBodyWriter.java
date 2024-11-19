@@ -29,7 +29,6 @@ import io.micronaut.http.ByteBodyHttpResponseWrapper;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.MutableHttpHeaders;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.body.ByteBodyFactory;
 import io.micronaut.http.body.ChunkedMessageBodyReader;
@@ -43,7 +42,6 @@ import io.micronaut.http.exceptions.MessageBodyException;
 import io.micronaut.runtime.ApplicationConfiguration;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 
@@ -78,10 +76,7 @@ public final class NettyWritableBodyWriter implements TypedMessageBodyHandler<Wr
 
     @Override
     public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<Writable> outgoingResponse, Argument<Writable> type, MediaType mediaType, Writable object) throws CodecException {
-        MutableHttpHeaders outgoingHeaders = outgoingResponse.getHeaders();
-        if (!outgoingHeaders.contains(HttpHeaderNames.CONTENT_TYPE)) {
-            outgoingHeaders.contentType(mediaType);
-        }
+        outgoingResponse.getHeaders().contentTypeIfMissing(mediaType);
         return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, writePiece(bodyFactory, request, outgoingResponse, type, mediaType, object));
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.http.server.netty.body;
+package io.micronaut.http.server.body;
 
 import io.micronaut.core.annotation.Experimental;
 import io.micronaut.core.annotation.Internal;
@@ -36,11 +36,9 @@ import io.micronaut.http.body.ResponseBodyWriter;
 import io.micronaut.http.body.stream.InputStreamByteBody;
 import io.micronaut.http.codec.CodecException;
 import io.micronaut.http.exceptions.MessageBodyException;
-import io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration;
+import io.micronaut.http.server.HttpServerConfiguration;
 import io.micronaut.http.server.types.files.SystemFile;
 import io.micronaut.scheduling.TaskExecutors;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -70,7 +68,7 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
 
     private final ExecutorService ioExecutor;
 
-    public SystemFileBodyWriter(NettyHttpServerConfiguration.FileTypeHandlerConfiguration configuration, @Named(TaskExecutors.BLOCKING) ExecutorService ioExecutor) {
+    public SystemFileBodyWriter(HttpServerConfiguration.FileTypeHandlerConfiguration configuration, @Named(TaskExecutors.BLOCKING) ExecutorService ioExecutor) {
         super(configuration);
         this.ioExecutor = ioExecutor;
     }
@@ -90,7 +88,7 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
             throw new MessageBodyException("Could not find file");
         }
         if (handleIfModifiedAndHeaders(request, response, systemFile, response)) {
-            return notModified(response);
+            return notModified(bodyFactory, response);
         } else {
 
             // Parse the range headers (if any), and determine the position and content length
@@ -119,9 +117,6 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
                     }
                 }
                 response.header(HttpHeaders.ACCEPT_RANGES, UNIT_BYTES);
-                response.header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentLength));
-            } else {
-                response.header(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
             }
 
             File file = systemFile.getFile();
