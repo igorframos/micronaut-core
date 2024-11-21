@@ -38,8 +38,9 @@ import java.nio.charset.StandardCharsets;
  */
 @Internal
 public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream, CoreSubscriber<ByteBody>, BufferConsumer {
-    private long unacknowledgedPrev;
-    private long unacknowledgedCurrent;
+    private long forwarded;
+    private long consumed;
+
     private Subscription subscription;
     private boolean cancelled;
     private volatile boolean disregardBackpressure;
@@ -96,7 +97,7 @@ public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream
         long emitted = emitFinalSeparator(first);
         if (emitted != 0) {
             synchronized (this) {
-                unacknowledgedPrev += emitted;
+                forwarded += emitted;
             }
         }
         forwardComplete();
@@ -126,7 +127,7 @@ public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream
      */
     protected final void onForward(long n) {
         synchronized (this) {
-            unacknowledgedCurrent += n;
+            forwarded += n;
         }
     }
 
@@ -140,15 +141,17 @@ public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream
             return;
         }
 
+        long preAcknowledged;
         synchronized (this) {
-            unacknowledgedPrev += emitted + unacknowledgedCurrent;
-            unacknowledgedCurrent = 0;
+            preAcknowledged = consumed - forwarded;
             currentComponent = component;
         }
 
         component.start();
         if (disregardBackpressure) {
             component.disregardBackpressure();
+        } else if (preAcknowledged > 0) {
+            component.onBytesConsumed(preAcknowledged);
         }
     }
 
@@ -166,18 +169,20 @@ public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream
 
     @Override
     public final void onBytesConsumed(long bytesConsumed) {
+        long delta;
         Upstream currentComponent;
         synchronized (this) {
-            if (unacknowledgedPrev > bytesConsumed) {
-                unacknowledgedPrev -= bytesConsumed;
-                return;
+            long newConsumed = consumed + bytesConsumed;
+            if (newConsumed < consumed) {
+                // overflow
+                newConsumed = Long.MAX_VALUE;
             }
-            bytesConsumed -= unacknowledgedPrev;
-            unacknowledgedPrev = 0;
-            unacknowledgedCurrent -= bytesConsumed;
+            delta = newConsumed - consumed;
+            consumed = newConsumed;
+
             currentComponent = this.currentComponent;
         }
-        if (currentComponent != null) {
+        if (currentComponent != null && delta > 0) {
             currentComponent.onBytesConsumed(bytesConsumed);
         }
     }
