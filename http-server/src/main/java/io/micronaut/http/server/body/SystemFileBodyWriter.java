@@ -79,7 +79,12 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, @NonNull MutableHttpResponse<SystemFile> httpResponse, @NonNull Argument<SystemFile> type, @NonNull MediaType mediaType, SystemFile object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory,
+                                         HttpRequest<?> request,
+                                         @NonNull MutableHttpResponse<SystemFile> httpResponse,
+                                         @NonNull Argument<SystemFile> type,
+                                         @NonNull MediaType mediaType,
+                                         SystemFile object) throws CodecException {
         return write(bodyFactory, request, httpResponse, object);
     }
 
@@ -133,7 +138,12 @@ public final class SystemFileBodyWriter extends AbstractFileBodyWriter implement
     }
 
     @Override
-    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<SystemFile> type, @NonNull MediaType mediaType, SystemFile object) {
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory,
+                                        @NonNull HttpRequest<?> request,
+                                        @NonNull HttpResponse<?> response,
+                                        @NonNull Argument<SystemFile> type,
+                                        @NonNull MediaType mediaType,
+                                        SystemFile object) {
         return writePiece(bodyFactory, object);
     }
 

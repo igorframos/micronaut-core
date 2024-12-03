@@ -65,7 +65,10 @@ public abstract class ResponseLifecycle {
     private final ConversionService conversionService;
     private final ByteBodyFactory byteBodyFactory;
 
-    public ResponseLifecycle(RouteExecutor routeExecutor, MessageBodyHandlerRegistry messageBodyHandlerRegistry, ConversionService conversionService, ByteBodyFactory byteBodyFactory) {
+    public ResponseLifecycle(RouteExecutor routeExecutor,
+                             MessageBodyHandlerRegistry messageBodyHandlerRegistry,
+                             ConversionService conversionService,
+                             ByteBodyFactory byteBodyFactory) {
         this.routeExecutor = routeExecutor;
         this.messageBodyHandlerRegistry = messageBodyHandlerRegistry;
         this.conversionService = conversionService;

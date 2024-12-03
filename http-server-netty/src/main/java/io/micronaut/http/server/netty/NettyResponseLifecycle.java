@@ -59,7 +59,10 @@ final class NettyResponseLifecycle extends ResponseLifecycle {
     private final NettyHttpRequest<?> request;
 
     public NettyResponseLifecycle(RoutingInBoundHandler routingInBoundHandler, NettyHttpRequest<?> request) {
-        super(routingInBoundHandler.routeExecutor, routingInBoundHandler.messageBodyHandlerRegistry, routingInBoundHandler.conversionService, new NettyByteBodyFactory(request.getChannelHandlerContext().channel()));
+        super(routingInBoundHandler.routeExecutor,
+            routingInBoundHandler.messageBodyHandlerRegistry,
+            routingInBoundHandler.conversionService,
+            new NettyByteBodyFactory(request.getChannelHandlerContext().channel()));
         this.routingInBoundHandler = routingInBoundHandler;
         this.request = request;
     }
@@ -109,7 +112,7 @@ final class NettyResponseLifecycle extends ResponseLifecycle {
             sharedBuffer = new StreamingNettyByteBody.SharedBuffer(eventLoop, BodySizeLimits.UNLIMITED, this);
         }
 
-        public static CloseableByteBody concatenate(EventLoop eventLoop, Publisher<ByteBody> publisher) {
+        static CloseableByteBody concatenate(EventLoop eventLoop, Publisher<ByteBody> publisher) {
             NettyConcatenatingSubscriber subscriber = new NettyConcatenatingSubscriber(eventLoop);
             publisher.subscribe(subscriber);
             return new StreamingNettyByteBody(subscriber.sharedBuffer);
@@ -165,7 +168,7 @@ final class NettyResponseLifecycle extends ResponseLifecycle {
             super(eventLoop);
         }
 
-        public static CloseableByteBody concatenateJson(EventLoop eventLoop, Publisher<ByteBody> publisher) {
+        static CloseableByteBody concatenateJson(EventLoop eventLoop, Publisher<ByteBody> publisher) {
             JsonNettyConcatenatingSubscriber subscriber = new JsonNettyConcatenatingSubscriber(eventLoop);
             publisher.subscribe(subscriber);
             return new StreamingNettyByteBody(subscriber.sharedBuffer);

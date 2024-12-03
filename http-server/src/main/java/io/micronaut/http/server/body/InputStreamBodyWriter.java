@@ -59,13 +59,23 @@ public final class InputStreamBodyWriter extends AbstractFileBodyWriter implemen
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<InputStream> outgoingResponse, Argument<InputStream> type, MediaType mediaType, InputStream object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory,
+                                         HttpRequest<?> request,
+                                         MutableHttpResponse<InputStream> outgoingResponse,
+                                         Argument<InputStream> type,
+                                         MediaType mediaType,
+                                         InputStream object) throws CodecException {
         outgoingResponse.getHeaders().contentTypeIfMissing(mediaType);
         return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, InputStreamByteBody.create(object, OptionalLong.empty(), executorService, bodyFactory));
     }
 
     @Override
-    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<InputStream> type, @NonNull MediaType mediaType, InputStream object) {
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory,
+                                        @NonNull HttpRequest<?> request,
+                                        @NonNull HttpResponse<?> response,
+                                        @NonNull Argument<InputStream> type,
+                                        @NonNull MediaType mediaType,
+                                        InputStream object) {
         return InputStreamByteBody.create(object, OptionalLong.empty(), executorService, bodyFactory);
     }
 

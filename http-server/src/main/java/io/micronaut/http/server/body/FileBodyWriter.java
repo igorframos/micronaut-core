@@ -52,14 +52,24 @@ public final class FileBodyWriter implements ResponseBodyWriter<File> {
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<File> outgoingResponse, Argument<File> type, MediaType mediaType, File object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory,
+                                         HttpRequest<?> request,
+                                         MutableHttpResponse<File> outgoingResponse,
+                                         Argument<File> type,
+                                         MediaType mediaType,
+                                         File object) throws CodecException {
         SystemFile systemFile = new SystemFile(object);
         MutableHttpResponse<SystemFile> newResponse = outgoingResponse.body(systemFile);
         return systemFileBodyWriter.write(bodyFactory, request, newResponse, systemFile);
     }
 
     @Override
-    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<File> type, @NonNull MediaType mediaType, File object) {
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory,
+                                        @NonNull HttpRequest<?> request,
+                                        @NonNull HttpResponse<?> response,
+                                        @NonNull Argument<File> type,
+                                        @NonNull MediaType mediaType,
+                                        File object) {
         return systemFileBodyWriter.writePiece(bodyFactory, new SystemFile(object));
     }
 

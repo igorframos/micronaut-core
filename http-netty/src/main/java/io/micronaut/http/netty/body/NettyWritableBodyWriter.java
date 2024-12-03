@@ -75,13 +75,23 @@ public final class NettyWritableBodyWriter implements TypedMessageBodyHandler<Wr
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<Writable> outgoingResponse, Argument<Writable> type, MediaType mediaType, Writable object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory,
+                                         HttpRequest<?> request,
+                                         MutableHttpResponse<Writable> outgoingResponse,
+                                         Argument<Writable> type,
+                                         MediaType mediaType,
+                                         Writable object) throws CodecException {
         outgoingResponse.getHeaders().contentTypeIfMissing(mediaType);
         return ByteBodyHttpResponseWrapper.wrap(outgoingResponse, writePiece(bodyFactory, request, outgoingResponse, type, mediaType, object));
     }
 
     @Override
-    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<Writable> type, @NonNull MediaType mediaType, Writable object) {
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory,
+                                        @NonNull HttpRequest<?> request,
+                                        @NonNull HttpResponse<?> response,
+                                        @NonNull Argument<Writable> type,
+                                        @NonNull MediaType mediaType,
+                                        Writable object) {
         ByteBufOutputStream outputStream = new ByteBufOutputStream(ByteBufAllocator.DEFAULT.buffer());
         try {
             object.writeTo(outputStream, MessageBodyWriter.getCharset(mediaType, response.getHeaders()));

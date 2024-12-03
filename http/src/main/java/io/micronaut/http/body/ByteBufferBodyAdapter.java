@@ -37,13 +37,27 @@ public final class ByteBufferBodyAdapter extends AbstractBodyAdapter<ByteBuffer,
         super(source, onDiscard);
     }
 
+    /**
+     * Create a new body that contains the bytes of the given publisher.
+     *
+     * @param source The byte publisher
+     * @return A body with those bytes
+     */
     @NonNull
-    static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> source) {
+    static ReactiveByteBufferByteBody adapt(@NonNull Publisher<ByteBuffer> source) {
         return adapt(source, null, null);
     }
 
+    /**
+     * Create a new body that contains the bytes of the given publisher.
+     *
+     * @param publisher        The byte publisher
+     * @param headersForLength Optional headers for reading the {@code content-length} header
+     * @param onDiscard        Optional runnable to call if the body is discarded ({@link #allowDiscard()})
+     * @return A body with those bytes
+     */
     @NonNull
-    static ReactiveByteBufferByteBody adapt(Publisher<ByteBuffer> publisher, @Nullable HttpHeaders headersForLength, @Nullable Runnable onDiscard) {
+    static ReactiveByteBufferByteBody adapt(@NonNull Publisher<ByteBuffer> publisher, @Nullable HttpHeaders headersForLength, @Nullable Runnable onDiscard) {
         ByteBufferBodyAdapter adapter = new ByteBufferBodyAdapter(publisher, onDiscard);
         adapter.sharedBuffer = new ReactiveByteBufferByteBody.SharedBuffer(BodySizeLimits.UNLIMITED, adapter);
         if (headersForLength != null) {

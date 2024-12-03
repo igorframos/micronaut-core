@@ -28,7 +28,6 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.EventLoop;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,13 +36,16 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * {@link ByteBodyFactory} implementation with netty-optimized bodies.
+ *
+ * @since 4.8.0
+ * @author Jonas Konrad
+ */
 @Internal
 public final class NettyByteBodyFactory extends ByteBodyFactory {
-    private final EventLoop eventLoop;
-
     public NettyByteBodyFactory(@NonNull Channel channel) {
         super(new NettyByteBufferFactory(channel.alloc()));
-        this.eventLoop = channel.eventLoop();
     }
 
     private ByteBufAllocator alloc() {

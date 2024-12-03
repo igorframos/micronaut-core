@@ -60,7 +60,12 @@ public final class StreamFileBodyWriter extends AbstractFileBodyWriter implement
     }
 
     @Override
-    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory, HttpRequest<?> request, MutableHttpResponse<StreamedFile> outgoingResponse, Argument<StreamedFile> type, MediaType mediaType, StreamedFile object) throws CodecException {
+    public ByteBodyHttpResponse<?> write(@NonNull ByteBodyFactory bodyFactory,
+                                         HttpRequest<?> request,
+                                         MutableHttpResponse<StreamedFile> outgoingResponse,
+                                         Argument<StreamedFile> type,
+                                         MediaType mediaType,
+                                         StreamedFile object) throws CodecException {
         if (handleIfModifiedAndHeaders(request, outgoingResponse, object, outgoingResponse)) {
             return notModified(bodyFactory, outgoingResponse);
         } else {
@@ -69,7 +74,12 @@ public final class StreamFileBodyWriter extends AbstractFileBodyWriter implement
     }
 
     @Override
-    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory, @NonNull HttpRequest<?> request, @NonNull HttpResponse<?> response, @NonNull Argument<StreamedFile> type, @NonNull MediaType mediaType, StreamedFile object) {
+    public CloseableByteBody writePiece(@NonNull ByteBodyFactory bodyFactory,
+                                        @NonNull HttpRequest<?> request,
+                                        @NonNull HttpResponse<?> response,
+                                        @NonNull Argument<StreamedFile> type,
+                                        @NonNull MediaType mediaType,
+                                        StreamedFile object) {
         long length = object.getLength();
         InputStream inputStream = object.getInputStream();
         return InputStreamByteBody.create(inputStream, length > -1 ? OptionalLong.of(length) : OptionalLong.empty(), ioExecutor, bodyFactory);

@@ -133,7 +133,7 @@ public abstract class ConcatenatingSubscriber implements BufferConsumer.Upstream
 
     @Override
     public final void onNext(ByteBody body) {
-        long emitted = emitLeadingSeparator(first);
+        onForward(emitLeadingSeparator(first));
         first = false;
 
         BufferConsumer.Upstream component = forward(body);
