@@ -21,8 +21,7 @@ import jakarta.inject.Singleton;
 
 @Requires(property = "spec.name", value = "ConstructorExceptionSpec")
 @Singleton
-public class C {
-    public C() {
-        throw new RuntimeException("bad");
+public class MyClassA {
+    public MyClassA(MyClassC propC) {
     }
 }

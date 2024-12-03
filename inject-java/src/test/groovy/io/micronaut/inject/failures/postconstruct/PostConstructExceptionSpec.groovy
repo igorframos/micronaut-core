@@ -31,10 +31,12 @@ class PostConstructExceptionSpec extends Specification {
 
         then:"The implementation is injected"
         def e = thrown(BeanInstantiationException)
-        def ls = CachedEnvironment.getProperty("line.separator")
-        e.message == 'Error instantiating bean of type  [io.micronaut.inject.failures.postconstruct.B]' + ls + ls +
-                'Message: bad' + ls +
-                'Path Taken: new B()'
+        e.message.normalize() == '''\
+Error instantiating bean of type  [io.micronaut.inject.failures.postconstruct.B]
+
+Message: bad
+Path Taken:
+new B()'''
 
         cleanup:
         context.close()

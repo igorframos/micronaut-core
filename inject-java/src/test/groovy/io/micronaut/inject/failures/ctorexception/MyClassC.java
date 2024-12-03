@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.ctordependencyfailure;
+package io.micronaut.inject.failures.ctorexception;
 
-public interface A {
+import io.micronaut.context.annotation.Requires;
+
+import jakarta.inject.Singleton;
+
+@Requires(property = "spec.name", value = "ConstructorExceptionSpec")
+@Singleton
+public class MyClassC {
+    public MyClassC() {
+        throw new RuntimeException("bad");
+    }
 }

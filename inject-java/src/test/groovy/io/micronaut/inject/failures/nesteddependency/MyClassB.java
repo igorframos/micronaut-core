@@ -15,5 +15,13 @@
  */
 package io.micronaut.inject.failures.nesteddependency;
 
-public class D {
+import jakarta.inject.Inject;
+
+public class MyClassB {
+    @Inject
+    private MyClassA propA;
+
+    public MyClassA getPropA() {
+        return this.propA;
+    }
 }

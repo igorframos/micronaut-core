@@ -60,7 +60,7 @@ class MessageUtils {
         }
         if (hasPath) {
             String pathString = path.toString();
-            builder.append("Path Taken: ").append(pathString);
+            builder.append("Path Taken:").append(pathString);
         }
         return builder.toString();
     }

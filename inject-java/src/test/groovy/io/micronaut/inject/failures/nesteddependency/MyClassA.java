@@ -15,13 +15,14 @@
  */
 package io.micronaut.inject.failures.nesteddependency;
 
-import jakarta.inject.Inject;
+import io.micronaut.context.annotation.Requires;
 
-public class B {
-    @Inject
-    private A a;
+import jakarta.inject.Singleton;
 
-    public A getA() {
-        return this.a;
+@Requires(property = "spec.name", value = "NestedDependencyFailureSpec")
+@Singleton
+public class MyClassA {
+    public MyClassA(MyClassC propC) {
+
     }
 }

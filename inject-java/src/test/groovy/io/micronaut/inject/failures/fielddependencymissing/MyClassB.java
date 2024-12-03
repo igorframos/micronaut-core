@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.ctordependencyfailure;
+package io.micronaut.inject.failures.fielddependencymissing;
 
 import jakarta.inject.Inject;
 
-public class B {
-    private final A a;
-
+public class MyClassB {
     @Inject
-    public B(A a) {
-        this.a = a;
+    private MyClassA propA;
+
+    public MyClassA getPropA() {
+        return this.propA;
     }
 }

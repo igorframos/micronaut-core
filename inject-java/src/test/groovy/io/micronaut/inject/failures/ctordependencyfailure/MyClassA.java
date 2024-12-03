@@ -13,15 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.ctorexception;
+package io.micronaut.inject.failures.ctordependencyfailure;
 
-import jakarta.inject.Inject;
-
-public class B {
-    @Inject
-    private A a;
-
-    public A getA() {
-        return this.a;
-    }
+public interface MyClassA {
 }

@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.nesteddependency;
+package io.micronaut.inject.failures.ctordependencyfailure;
 
-import io.micronaut.context.annotation.Requires;
+import jakarta.inject.Inject;
 
-import jakarta.inject.Singleton;
+public class MyClassB {
+    private final MyClassA propA;
 
-@Requires(property = "spec.name", value = "NestedDependencyFailureSpec")
-@Singleton
-public class A {
-    public A(C c) {
-
+    @Inject
+    public MyClassB(MyClassA propA) {
+        this.propA = propA;
     }
 }

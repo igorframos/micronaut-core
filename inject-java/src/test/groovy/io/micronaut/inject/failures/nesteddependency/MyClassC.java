@@ -21,8 +21,8 @@ import jakarta.inject.Singleton;
 
 @Requires(property = "spec.name", value = "NestedDependencyFailureSpec")
 @Singleton
-public class C {
-    public C(D d) {
+public class MyClassC {
+    public MyClassC(MyClassD propD) {
 
     }
 }

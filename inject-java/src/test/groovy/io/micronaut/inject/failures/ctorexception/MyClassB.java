@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.fielddependencymissing;
+package io.micronaut.inject.failures.ctorexception;
 
-public interface A {
+import jakarta.inject.Inject;
+
+public class MyClassB {
+    @Inject
+    private MyClassA propA;
+
+    public MyClassA getPropA() {
+        return this.propA;
+    }
 }

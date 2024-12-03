@@ -301,7 +301,7 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
      */
     class DefaultPath extends LinkedList<Segment<?, ?>> implements Path {
 
-        public static final String RIGHT_ARROW = " --> ";
+        public static final String RIGHT_ARROW = "\\---> ";
         private static final String CIRCULAR_ERROR_MSG = "Circular dependency detected";
 
         DefaultPath() {
@@ -310,11 +310,15 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
         @Override
         public String toString() {
             Iterator<Segment<?, ?>> i = descendingIterator();
-            StringBuilder pathString = new StringBuilder();
+            String ls = CachedEnvironment.getProperty("line.separator");
+            StringBuilder pathString = new StringBuilder().append(ls);
+
+            String spaces = "";
             while (i.hasNext()) {
                 pathString.append(i.next().toString());
                 if (i.hasNext()) {
-                    pathString.append(RIGHT_ARROW);
+                    pathString.append(ls).append(spaces).append(RIGHT_ARROW);
+                    spaces += "      ";
                 }
             }
             return pathString.toString();
