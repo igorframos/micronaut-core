@@ -349,7 +349,7 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
                     pathString.append(ls).append(spaces).append("^").append("  \\---> ");
                     spaces = spaces + "|  ";
                 } else if (index != 0) {
-                    pathString.append(ls).append(spaces).append("\\---> ");
+                    pathString.append(ls).append(spaces).append(RIGHT_ARROW);
                 }
                 pathString.append(segmentString);
                 spaces = spaces + "      ";
