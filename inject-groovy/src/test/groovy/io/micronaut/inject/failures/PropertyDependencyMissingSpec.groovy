@@ -40,8 +40,8 @@ Failed to inject value for parameter [propA] of method [setPropA] of class: io.m
 
 Message: No bean of type [io.micronaut.inject.failures.PropertyDependencyMissingSpec\$MyClassA] exists.$space
 Path Taken:$space
-new MyClassB()
-\\---> MyClassB.setPropA([MyClassA propA])"""
+new i.m.i.f.P\$MyClassB()
+\\---> i.m.i.f.P\$MyClassB#setPropA([MyClassA propA])"""
 
         cleanup:
         context.close()

@@ -36,9 +36,9 @@ Error instantiating bean of type  [io.micronaut.inject.failures.ctorexception.My
 
 Message: bad
 Path Taken:
-new MyClassB()
-\\---> MyClassB.propA
-      \\---> new MyClassA([MyClassC propC])'''
+new i.m.i.f.c.MyClassB()
+\\---> i.m.i.f.c.MyClassB#propA
+      \\---> new i.m.i.f.c.MyClassA([MyClassC propC])'''
 
         cleanup:
         context.close()

@@ -13,36 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.inject.failures.postconstruct;
+package io.micronaut.inject.failures.fieldcirculardependency;
 
 import io.micronaut.context.annotation.Requires;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-@Requires(property = "spec.name", value = "PostConstructExceptionSpec")
+@Requires(property = "spec.name", value = "FieldCircularDependencyFailureSpec")
 @Singleton
-public class B {
+public class MyClassA {
 
-    boolean setupComplete = false;
-    boolean injectedFirst = false;
-
-    @Inject
-    protected A another;
-    private A a;
-
-    @Inject
-    public void setA(A a ) {
-        this.a = a;
-    }
-
-    public A getA() {
-        return a;
-    }
-
-    @PostConstruct
-    public void setup() {
-        throw new RuntimeException("bad");
-    }
+    public MyClassA(MyClassC propC) {}
 }

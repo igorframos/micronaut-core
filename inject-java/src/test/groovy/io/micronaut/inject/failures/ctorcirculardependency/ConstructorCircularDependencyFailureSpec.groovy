@@ -35,10 +35,10 @@ Failed to inject value for field [propA] of class: io.micronaut.inject.failures.
 
 Message: Circular dependency detected
 Path Taken:
-new MyClassB()
-      \\---> MyClassB.propA
-            ^  \\---> new MyClassA([MyClassC propC])
-            |        \\---> new MyClassC([MyClassB propB])
+new i.m.i.f.c.MyClassB()
+      \\---> i.m.i.f.c.MyClassB#propA
+            ^  \\---> new i.m.i.f.c.MyClassA([MyClassC propC])
+            |        \\---> new i.m.i.f.c.MyClassC([MyClassB propB])
             |              |
             +--------------+'''
     }
@@ -57,11 +57,11 @@ Failed to inject value for field [propA] of class: io.micronaut.inject.failures.
 
 Message: Circular dependency detected
 Path Taken:
-new MyClassD(MyClassB propB)
-      \\---> new MyClassD([MyClassB propB])
-            \\---> MyClassB.propA
-                  ^  \\---> new MyClassA([MyClassC propC])
-                  |        \\---> new MyClassC([MyClassB propB])
+new i.m.i.f.c.MyClassD(MyClassB propB)
+      \\---> new i.m.i.f.c.MyClassD([MyClassB propB])
+            \\---> i.m.i.f.c.MyClassB#propA
+                  ^  \\---> new i.m.i.f.c.MyClassA([MyClassC propC])
+                  |        \\---> new i.m.i.f.c.MyClassC([MyClassB propB])
                   |              |
                   +--------------+'''
     }

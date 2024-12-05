@@ -40,9 +40,9 @@ Error instantiating bean of type  [io.micronaut.inject.failures.ConstructorExcep
 
 Message: bad
 Path Taken:
-new MyClassB()
-\\---> MyClassB.propA
-      \\---> new MyClassA([MyClassC propC])'''
+new i.m.i.f.C$MyClassB()
+\\---> i.m.i.f.C$MyClassB#propA
+      \\---> new i.m.i.f.C$MyClassA([MyClassC propC])'''
 
         cleanup:
         context.close()

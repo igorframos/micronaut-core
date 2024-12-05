@@ -17,7 +17,7 @@ package io.micronaut.inject.failures.fieldcirculardependency;
 
 import jakarta.inject.Inject;
 
-public class C {
+public class MyClassC {
     @Inject
-    protected B b;
+    protected MyClassB propB;
 }

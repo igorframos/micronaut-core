@@ -17,6 +17,7 @@ package io.micronaut.inject.failures
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.exceptions.BeanInstantiationException
 import io.micronaut.context.exceptions.CircularDependencyException
 import spock.lang.Specification
 
@@ -24,9 +25,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-class FactoryCircularDependencyFailureSpec extends Specification {
+class FactoryDependencyFailureSpec extends Specification {
 
-    void "test circular dependency with factory failure"() {
+    void "test dependency with factory failure"() {
         given:
         ApplicationContext context = ApplicationContext.run()
 
@@ -34,18 +35,15 @@ class FactoryCircularDependencyFailureSpec extends Specification {
         context.getBean(ElectricalGrid)
 
         then:"The implementation is injected"
-        def e = thrown(CircularDependencyException)
+        def e = thrown(BeanInstantiationException)
         e.message.normalize() == '''\
-Failed to inject value for parameter [stations] of class: io.micronaut.inject.failures.FactoryCircularDependencyFailureSpec$ElectricalGrid
+Error instantiating bean of type  [io.micronaut.inject.failures.FactoryDependencyFailureSpec$ElectricStation]
 
-Message: Circular dependency detected
+Message: Outdated equipment
 Path Taken:
 new i.m.i.f.F$ElectricalGrid(List<ElectricStation E> stations)
-      \\---> new i.m.i.f.F$ElectricalGrid([List<ElectricStation E> stations])
-            ^  \\---> i.m.i.f.F$ElectricStationFactory#nuclearStation([MeasuringEquipment equipment])
-            |        \\---> i.m.i.f.F$MeasuringEquipment#grid
-            |              |
-            +--------------+'''
+\\---> new i.m.i.f.F$ElectricalGrid([List<ElectricStation E> stations])
+      \\---> i.m.i.f.F$ElectricStationFactory#nuclearStation([MeasuringEquipment equipment])'''
 
         cleanup:
         context.close()
@@ -77,7 +75,9 @@ new i.m.i.f.F$ElectricalGrid(List<ElectricStation E> stations)
 
     @Singleton
     static class MeasuringEquipment {
-        @Inject protected ElectricalGrid grid
+        MeasuringEquipment() {
+            throw new RuntimeException("Outdated equipment")
+        }
     }
 }
 

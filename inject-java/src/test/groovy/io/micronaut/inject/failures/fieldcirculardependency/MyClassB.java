@@ -22,7 +22,7 @@ import jakarta.inject.Singleton;
 
 @Requires(property = "spec.name", value = "FieldCircularDependencyFailureSpec")
 @Singleton
-public class B {
+public class MyClassB {
     @Inject
-    protected A a;
+    protected MyClassA propA;
 }

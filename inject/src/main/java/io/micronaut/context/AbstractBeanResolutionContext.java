@@ -26,6 +26,7 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.convert.ArgumentConversionContext;
+import io.micronaut.core.naming.NameUtils;
 import io.micronaut.core.naming.Named;
 import io.micronaut.core.type.Argument;
 import io.micronaut.core.type.ArgumentCoercible;
@@ -561,9 +562,9 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
             StringBuilder baseString;
             if (CONSTRUCTOR_METHOD_NAME.equals(methodName)) {
                 baseString = new StringBuilder("new ");
-                baseString.append(getDeclaringType().getBeanType().getSimpleName());
+                baseString.append(getTypeName(getDeclaringType().getBeanType()));
             } else {
-                baseString = new StringBuilder(getDeclaringType().getBeanType().getSimpleName()).append('.');
+                baseString = new StringBuilder(getTypeName(getDeclaringType().getBeanType())).append('#');
                 baseString.append(methodName);
             }
             outputArguments(baseString, arguments);
@@ -627,7 +628,7 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
             BeanDefinition<?> declaringBean = getDeclaringBean();
             if (declaringBean.hasAnnotation(Factory.class)) {
                 ConstructorInjectionPoint<?> constructor = declaringBean.getConstructor();
-                var baseString = new StringBuilder(constructor.getDeclaringBeanType().getSimpleName()).append('.');
+                var baseString = new StringBuilder(getTypeName(constructor.getDeclaringBeanType())).append(MEMBER_SEPARATOR);
                 baseString.append(getName());
                 outputArguments(baseString, getArguments());
                 return baseString.toString();
@@ -658,7 +659,7 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
 
         @Override
         public String toString() {
-            StringBuilder baseString = new StringBuilder(getDeclaringType().getBeanType().getSimpleName()).append('.');
+            StringBuilder baseString = new StringBuilder(getTypeName(getDeclaringType().getBeanType())).append(MEMBER_SEPARATOR);
             baseString.append(getName());
             outputArguments(baseString, arguments);
             return baseString.toString();
@@ -706,7 +707,7 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
 
         @Override
         public String toString() {
-            return getDeclaringType().getBeanType().getSimpleName() + "." + getName();
+            return getTypeName(getDeclaringType().getBeanType()) + MEMBER_SEPARATOR + getName();
         }
 
         @Override
@@ -786,6 +787,12 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
      * Abstract class for a Segment.
      */
     protected abstract static class AbstractSegment<B, T> implements Segment<B, T>, Named {
+
+        /**
+         * The separator between a type and its member when printing to user.
+         */
+        protected static final String MEMBER_SEPARATOR = "#";
+
         private final BeanDefinition<B> declaringComponent;
         @Nullable
         private final Qualifier<B> qualifier;
@@ -803,6 +810,16 @@ public abstract class AbstractBeanResolutionContext implements BeanResolutionCon
             this.qualifier = qualifier;
             this.name = name;
             this.argument = argument;
+        }
+
+        /**
+         * A common method for retrieving a name for type. The default behavior is to use the shortened type name.
+         *
+         * @param type The type
+         * @return The name to be shown to user
+         */
+        protected String getTypeName(Class<?> type) {
+            return NameUtils.getShortenedName(type.getName());
         }
 
         @Override

@@ -21,6 +21,6 @@ import jakarta.inject.Singleton;
 
 @Requires(property = "spec.name", value = "PostConstructExceptionSpec")
 @Singleton
-public class A {
+public class MyClassA {
 
 }

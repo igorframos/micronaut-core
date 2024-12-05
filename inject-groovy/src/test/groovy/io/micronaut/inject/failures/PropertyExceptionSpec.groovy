@@ -41,8 +41,8 @@ Error instantiating bean of type  [io.micronaut.inject.failures.PropertyExceptio
 
 Message: bad
 Path Taken:
-new MyClassB()
-\\---> MyClassB.propA'''
+new i.m.i.f.P$MyClassB()
+\\---> i.m.i.f.P$MyClassB#propA'''
 
         cleanup:
         context.close()

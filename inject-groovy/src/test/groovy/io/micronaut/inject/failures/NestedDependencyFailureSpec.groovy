@@ -41,10 +41,10 @@ Failed to inject value for parameter [propD] of class: io.micronaut.inject.failu
 
 Message: No bean of type [io.micronaut.inject.failures.NestedDependencyFailureSpec\$MyClassD] exists.$space
 Path Taken:$space
-new MyClassB()
-\\---> MyClassB.propA
-      \\---> new MyClassA([MyClassC propC])
-            \\---> new MyClassC([MyClassD propD])"""
+new i.m.i.f.N\$MyClassB()
+\\---> i.m.i.f.N\$MyClassB#propA
+      \\---> new i.m.i.f.N\$MyClassA([MyClassC propC])
+            \\---> new i.m.i.f.N\$MyClassC([MyClassD propD])"""
 
         cleanup:
         context.close()

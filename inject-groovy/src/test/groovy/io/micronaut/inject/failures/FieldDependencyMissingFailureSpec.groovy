@@ -40,8 +40,8 @@ Failed to inject value for field [propA] of class: io.micronaut.inject.failures.
 
 Message: No bean of type [io.micronaut.inject.failures.FieldDependencyMissingFailureSpec\$MyClassA] exists.$space
 Path Taken:$space
-new MyClassB()
-\\---> MyClassB.propA"""
+new i.m.i.f.F\$MyClassB()
+\\---> i.m.i.f.F\$MyClassB#propA"""
 
         cleanup:
         context.close()

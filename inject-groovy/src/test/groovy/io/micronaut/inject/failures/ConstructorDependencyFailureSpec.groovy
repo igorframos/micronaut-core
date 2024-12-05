@@ -40,8 +40,8 @@ Failed to inject value for parameter [propA] of class: io.micronaut.inject.failu
 
 Message: No bean of type [io.micronaut.inject.failures.ConstructorDependencyFailureSpec\$MyClassA] exists.$space
 Path Taken:$space
-new MyClassB(MyClassA propA)
-\\---> new MyClassB([MyClassA propA])"""
+new i.m.i.f.C\$MyClassB(MyClassA propA)
+\\---> new i.m.i.f.C\$MyClassB([MyClassA propA])"""
 
         cleanup:
         context.close()

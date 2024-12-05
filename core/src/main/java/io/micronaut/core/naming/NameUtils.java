@@ -16,6 +16,7 @@
 package io.micronaut.core.naming;
 
 import io.micronaut.core.annotation.AccessorsStyle;
+import io.micronaut.core.annotation.Experimental;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.ArgumentUtils;
 import io.micronaut.core.util.StringUtils;
@@ -212,6 +213,41 @@ public class NameUtils {
             return className.substring(position + 1);
         }
         return className;
+    }
+
+    /**
+     * Returns the shortened fully-qualified name for a class represented as a string.
+     * Shortened name would have package names and owner objects reduced to a single letter.
+     * For example, {@code com.example.Owner$Inner} would become {@code c.e.O$Inner}.
+     * IDEs would still be able to recognize these types, but they would take less space
+     * visually.
+     *
+     * @since 4.8.x
+     * @param typeName The fully-qualified type name
+     * @return The shortened type name
+     */
+    @Experimental
+    public static String getShortenedName(String typeName) {
+        int nameStart = typeName.lastIndexOf('$');
+        if (nameStart < 0) {
+            nameStart = typeName.lastIndexOf('.');
+        }
+        if (nameStart < 0) {
+            nameStart = 0;
+        }
+        StringBuilder shortened = new StringBuilder();
+        boolean segmentStart = true;
+        for (int i = 0; i < nameStart; i++) {
+            char c = typeName.charAt(i);
+            if (segmentStart) {
+                shortened.append(c);
+                segmentStart = false;
+            } else if (c == '.' || c == '$') {
+                shortened.append(c);
+                segmentStart = true;
+            }
+        }
+        return shortened.append(typeName.substring(nameStart)).toString();
     }
 
     /**
