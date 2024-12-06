@@ -45,6 +45,9 @@ import java.nio.charset.StandardCharsets;
 @Internal
 public final class NettyByteBodyFactory extends ByteBodyFactory {
     public NettyByteBodyFactory(@NonNull Channel channel) {
+        // note: atm we only use the alloc from the channel, but in the future we might also use
+        // the event loop for streaming bodies. Please design use sites to have a channel
+        // available, and don't create a constructor that just takes the alloc :)
         super(new NettyByteBufferFactory(channel.alloc()));
     }
 
