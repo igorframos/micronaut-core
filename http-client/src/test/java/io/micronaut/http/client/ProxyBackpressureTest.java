@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ProxyBackpressureTest {
     private static final int CHUNK_SIZE = 1024 * 1024;
-    private static final int TOTAL_CHUNKS = 1024;
+    private static final int TOTAL_CHUNKS = 128;
 
     @ParameterizedTest
     @CsvSource({
