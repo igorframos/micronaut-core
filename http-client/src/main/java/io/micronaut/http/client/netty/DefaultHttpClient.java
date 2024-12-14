@@ -1050,7 +1050,7 @@ public class DefaultHttpClient implements
 
         RequestKey requestKey;
         try {
-            requestKey = new RequestKey(this, requestURI);
+            requestKey = new RequestKey(this, requestWrapper.get().getUri());
         } catch (HttpClientException e) {
             return Flux.error(e);
         }
